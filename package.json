@@ -1,0 +1,25 @@
+{
+  "name": "simple-selenium-observable",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marvinirwin/simple-selenium-observable.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marvinirwin/simple-selenium-observable/issues"
+  },
+  "homepage": "https://github.com/marvinirwin/simple-selenium-observable#readme",
+  "dependencies": {
+    "selenium-webdriver": "^4.0.0-alpha.7"
+  },
+  "devDependencies": {
+    "jest": "^25.1.0"
+  }
+}
