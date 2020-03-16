@@ -1,6 +1,16 @@
-const sleep = n => new Promise(resolve => setTimeout(resolve, n));
-
+const webdriver = require('selenium-webdriver');
 module.exports = function() {
+    /**
+     * @param driver
+     * @param id
+     */
+    function removeElement(driver, id) {
+        driver.executeScript(`
+    const [id] = arguments;
+    document.getElementById(id).remove(); 
+    `, id);
+    }
+
     /**
      * Returns an observable with the properties {value, next}
      * @param name
@@ -19,8 +29,8 @@ module.exports = function() {
                 this.subscribers.push(cb);
             }
         };
-        subject$.subscribe((v, sendToSelenium = false) => {
-                if (!sendToSelenium) {
+        subject$.subscribe((v, sendThroughChannel = false) => {
+                if (!sendThroughChannel) {
                     return;
                 }
                 sendMessageThroughChannel(
@@ -76,7 +86,6 @@ module.exports = function() {
         async setup(driver) {
             sendMessageThroughChannel = (...a) => sendMessageToBrowser(driver, ...a);
 
-            // Instantiate the sendMessageToNode and getFakeObservable functions on the other side
             const entries = Object.entries(this);
 
             /**
@@ -106,9 +115,22 @@ module.exports = function() {
                         sendMessageToBrowser(driver, k, v)
                     }
                 })
-            })
+            });
+
+            setInterval(async () => {
+                const els = await driver.findElements(webdriver.By.className('selenium-event'));
+                for (let i = 0; i < els.length; i++) {
+                    const el = els[i];
+                    let msg = await el.getText();
+                    let id = await el.getAttribute('id');
+                    removeElement(driver, id);
+                    const {sender, message} = JSON.parse(msg);
+                    this[sender].next(message); // Tell it not to send the message back
+                }
+            }, 500);
 
         }
+
 
         /**
          * @param driver {WebDriver}
@@ -121,10 +143,10 @@ module.exports = function() {
             this.prop2 = getFakeObservable('prop2', 1);
             this.prop3 = getFakeObservable('prop3', {test: new Date});
         }
-
     }
 
     return {
-        SeleniumDataBus
+        SeleniumDataBus,
+        getFakeObservable
     }
 };

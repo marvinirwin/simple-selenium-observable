@@ -24,14 +24,14 @@ test('The states synchronize', async () => {
     );
     context.prop2.next('This should be sent to Selenium');
     await sleep(1000);
-    expect(context.prop1.value === 'This should be sent to node');
     await driver.executeScript(
         `
             if (window.seleniumContext.prop2.value !== 'This should be sent to Selenium') {
                 throw new Error('SeleniumContext did not update!');
             }
             `
-    )
+    );
+    expect(context.prop1.value === 'This should be sent to node'); // hmmm, why doesnt this expect trigger failure
 });
 
 
