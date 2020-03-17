@@ -134,14 +134,25 @@ module.exports = function() {
 
         /**
          * @param driver {WebDriver}
+         * @param obj
          */
-        constructor(driver) {
+        constructor(
+            driver,
+            obj= {
+                prop1: 'prop1',
+                prop2: 1,
+                prop3: {test: new Date()}
+            }
+            ) {
             /**
              * These are the properties of our communication bus
              */
-            this.prop1 = getFakeObservable('prop1', 'prop1');
-            this.prop2 = getFakeObservable('prop2', 1);
-            this.prop3 = getFakeObservable('prop3', {test: new Date});
+            Object.keys(obj).forEach(k => {
+                if (k === 'driver') {
+                    throw new Error('Cannot use the key!')
+                }
+                this[k] = getFakeObservable(k, obj[k]);
+            })
         }
     }
 
